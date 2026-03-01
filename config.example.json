@@ -1,0 +1,35 @@
+{
+  "keywords": [
+    "Analyst",
+    "Assistant",
+    "Banking",
+    "Business",
+    "Casual",
+    "Change",
+    "Consultant",
+    "Corporate",
+    "Credit",
+    "Customer",
+    "Lifecycle",
+    "Management",
+    "Operations",
+    "Relationship",
+    "Representative",
+    "Service",
+    "Specialist"
+  ],
+  "discord_webhook": "https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN",
+  "interval_minutes": 30,
+  "fuzzy_threshold": 80,
+  "location": "New Zealand",
+  "sites": {
+    "heartland": true,
+    "mtf": true,
+    "avanti": true,
+    "kiwibank": true,
+    "bnz": true,
+    "anz": true,
+    "westpac": true,
+    "asb": true
+  }
+}

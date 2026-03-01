@@ -1,0 +1,30 @@
+# ── Sensitive / personal data ───────────────────────────────────────────────
+# config.json holds your Discord webhook — NEVER commit it.
+# Copy config.example.json → config.json and fill in your own values.
+config.json
+jobs.json
+seen_jobs.json
+
+# ── Build artefacts ─────────────────────────────────────────────────────────
+*.exe
+*.spec
+build/
+dist/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ── Virtual environments ─────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+.env
+
+# ── Editor / OS noise ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
