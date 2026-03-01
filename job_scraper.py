@@ -37,8 +37,9 @@ HEADERS = {
 SEEN_FILE = "seen_jobs.json"
 
 # Discord hard limits
-_DISCORD_DESC_LIMIT  = 4000
-_DISCORD_EMBED_BATCH = 10
+_DISCORD_DESC_LIMIT   = 4000   # max chars per embed description
+_DISCORD_EMBED_BATCH  = 10     # max embeds per message
+_DISCORD_TOTAL_LIMIT  = 5500   # max total chars across all embeds in one message (hard limit is 6000)
 
 
 # ==============================
@@ -108,6 +109,11 @@ def _build_embeds(grouped: dict) -> list:
     return embeds
 
 
+def _embed_char_count(embed: dict) -> int:
+    """Approximate character count for a single embed (title + description)."""
+    return len(embed.get("title", "")) + len(embed.get("description", ""))
+
+
 def send_to_discord_grouped(new_jobs: list):
     if not DISCORD_WEBHOOK or not new_jobs:
         return
@@ -115,8 +121,23 @@ def send_to_discord_grouped(new_jobs: list):
     for job in new_jobs:
         grouped.setdefault(job["site"], []).append(job)
     all_embeds = _build_embeds(grouped)
-    for i in range(0, len(all_embeds), _DISCORD_EMBED_BATCH):
-        batch = all_embeds[i : i + _DISCORD_EMBED_BATCH]
+
+    # Split into batches respecting BOTH the embed count limit AND
+    # Discord's 6000 total-character-per-message hard limit.
+    _DISCORD_TOTAL_LIMIT = 5500  # conservative buffer below the 6000 hard cap
+    batches, batch, total_chars = [], [], 0
+    for embed in all_embeds:
+        ec = _embed_char_count(embed)
+        if batch and (len(batch) >= _DISCORD_EMBED_BATCH or
+                      total_chars + ec > _DISCORD_TOTAL_LIMIT):
+            batches.append(batch)
+            batch, total_chars = [], 0
+        batch.append(embed)
+        total_chars += ec
+    if batch:
+        batches.append(batch)
+
+    for batch in batches:
         try:
             r = requests.post(DISCORD_WEBHOOK, json={"embeds": batch}, timeout=15)
             r.raise_for_status()
